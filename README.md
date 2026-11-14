@@ -202,7 +202,7 @@ The complete set of defaults is in [`_config.example.yml`](_config.example.yml).
 | `bookmark_db` | Disabled | Optional SQLite bookmark source; see [Bookmarks](#bookmarks-yaml-or-sqlite). |
 | `since` | `2026` | Site founding year shown in the footer. |
 | `about` | `/about/` link | Sidebar link to the about page. Set `about: {}` to hide it. |
-| `aboutPage` | Sample text | Content of the about page. |
+| `aboutPage` | Sample labels and card | The about page's section labels and webmaster card; the page body lives in `source/about/index.md`. |
 | `busuanzi` | Disabled | Visitor statistics. `position` is `sidebar` or `footer`; `$pv` and `$uv` are placeholders. |
 | `custom.head` | empty | HTML added to `<head>`. |
 | `custom.body` | empty | HTML added before `</body>`. |
@@ -354,17 +354,27 @@ Run these in the Hexo site root with the theme active. `hexo bookmarks` is a com
 
 ## About page and child pages
 
-Create `source/about/index.html` to enable the sidebar's about link:
+Create `source/about/index.md` and write the body in Markdown to enable the sidebar's about link:
 
-```yaml
+```markdown
 ---
 layout: page
 type: about
 title: About
 ---
+
+This is where your site introduction goes. Markdown works: **bold**, lists, links.
+
+## About me
+
+Keep writing here.
 ```
 
-Edit `aboutPage.website` and `aboutPage.webmaster` in `_config.webstack-next.yml` to replace the sample text. If you do not want the page, set `about: {}`.
+`aboutPage.website.head`, `aboutPage.webmaster.head` and the webmaster card's `name`, `url`, `img` and `description` are configured in `_config.webstack-next.yml`; the page body is no longer part of the configuration. To start from a ready-made page, copy [`examples/about-page.md`](examples/about-page.md) to `source/about/index.md`. The about page can also override both blocks in its front matter. If you do not want the page, set `about: {}`.
+
+Markdown needs a renderer on your site; the `hexo-renderer-marked` that `hexo init` installs is enough. Without a Markdown renderer, name the file `source/about/index.html` and write the body as HTML.
+
+Older releases read the body from `aboutPage.website.html` and `aboutPage.webmaster.html`. Those keys are gone: after upgrading, move that text into `source/about/index.md` and keep the labels in the configuration.
 
 Child pages let you publish extra directories that reuse the card layout. Create `source/child/index.html`:
 
@@ -385,7 +395,7 @@ childTools:
 ---
 ```
 
-A child page inherits the theme settings and may override them in its front matter. Its lists can also live in `source/_data/child/childTools.yml`. See the working examples in [`dev-site/source/child/index.html`](dev-site/source/child/index.html) and [`dev-site/source/about/index.html`](dev-site/source/about/index.html).
+A child page inherits the theme settings and may override them in its front matter. Its lists can also live in `source/_data/child/childTools.yml`. See the working examples in [`dev-site/source/child/index.html`](dev-site/source/child/index.html) and [`dev-site/source/about/index.md`](dev-site/source/about/index.md).
 
 ## Update the theme
 

@@ -36,7 +36,7 @@ async function main() {
     name: 'webstack-development',
     private: true,
     hexo: { version: require('hexo/package.json').version },
-    dependencies: { 'hexo-renderer-pug': '*', 'hexo-server': '*' }
+    dependencies: { 'hexo-renderer-pug': '*', 'hexo-renderer-marked': '*', 'hexo-server': '*' }
   }, null, 2));
   await fs.copyFile(path.join(root, 'dev-site', '_config.yml'), path.join(base, '_config.yml'));
   await fs.copyFile(path.join(root, '_config.example.yml'), path.join(base, '_config.webstack-next.yml'));
@@ -61,6 +61,9 @@ async function main() {
         }
         if (route === 'index.html' && !html.includes('class="resource-card"')) {
           throw new Error('The development homepage must render its configured resource cards.');
+        }
+        if (route === 'about/index.html' && !html.includes('<h2')) {
+          throw new Error('The about page must render the Markdown body of source/about/index.md.');
         }
       }
       console.log(`Hexo ${hexo.version}: homepage, about and child pages generated successfully.`);

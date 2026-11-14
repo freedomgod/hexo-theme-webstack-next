@@ -17,13 +17,13 @@ async function main() {
   await fs.mkdir(path.join(base, 'source', 'child'), {recursive: true});
   await fs.mkdir(path.join(base, 'source', 'about'), {recursive: true});
   await fs.writeFile(path.join(base, 'package.json'), JSON.stringify({
-    private: true, hexo: {version: '8.1.2'}, dependencies: {'hexo-renderer-pug': '^3.0.0'}
+    private: true, hexo: {version: '8.1.2'}, dependencies: {'hexo-renderer-pug': '^3.0.0', 'hexo-renderer-marked': '^7.0.0'}
   }));
   const readme = await fs.readFile(path.join(root, 'README.md'), 'utf8');
   const homepage = readme.match(/```yaml\r?\n(---\r?\nlayout: index[\s\S]*?---)\r?\n```/);
   assert(homepage, 'README must include a complete homepage example');
   await fs.writeFile(path.join(base, 'source', 'index.html'), homepage[1]);
-  await fs.copyFile(path.join(root, 'dev-site', 'source', 'about', 'index.html'), path.join(base, 'source', 'about', 'index.html'));
+  await fs.copyFile(path.join(root, 'dev-site', 'source', 'about', 'index.md'), path.join(base, 'source', 'about', 'index.md'));
   // A child page with no menu overrides must inherit the theme's categories.
   await fs.writeFile(path.join(base, 'source', 'child', 'index.html'), '---\nlayout: page\ntype: child\ntitle: Child resources\n---\n');
   const theme = yaml.load(await fs.readFile(path.join(root, '_config.example.yml'), 'utf8'));
@@ -54,6 +54,8 @@ async function main() {
       }
       if (route !== 'about/index.html') {
         assert(html.includes('class="resource-card"'), `${route}: configured cards must render`);
+      } else {
+        assert(html.includes('<h2'), 'about page: Markdown body of source/about/index.md must render');
       }
     }
     const child = await fs.readFile(path.join(base, 'public', 'child/index.html'), 'utf8');

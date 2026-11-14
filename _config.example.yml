@@ -79,24 +79,24 @@ projectLinks:
     img: /images/logos/github.png
     description: 当前 fork 的源码、安装说明与问题反馈。
 
-# Create source/about/index.html as described in README_CN.md to enable this link.
+# Create source/about/index.md as described in README_CN.md to enable this link.
 # Set about: {} if your site does not have an about page.
 about:
   url: /about/
   icon: far fa-heart
   name: 关于本站
 
+# The page body comes from source/about/index.md (see examples/about-page.md);
+# only these labels and the webmaster card live here.
 aboutPage:
   website:
     head: 关于本站
-    html: '<p>这里是我的导航站。请编辑站点根目录的 _config.webstack-next.yml，介绍你的网站。</p>'
   webmaster:
     head: 关于站长
     name: 你的名字
     url: https://example.com/
     img: /images/favicon.png
     description: 在这里填写你的简介。
-    html: '<p>主题由 <a href="https://github.com/freedomgod/hexo-theme-webstack-next">freedomgod</a> 基于 <a href="https://github.com/HCLonely/hexo-theme-webstack">HCLonely 的 Hexo 主题</a>继续维护，原始设计来自 <a href="https://github.com/WebStackPage/WebStackPage.github.io">WebStackPage / Viggo</a>。</p>'
 
 # Replace with your site's founding year.
 since: 2026

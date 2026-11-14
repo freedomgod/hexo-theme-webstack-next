@@ -202,7 +202,7 @@ devTools:
 | `bookmark_db` | 关闭 | 可选的 SQLite 书签来源，见[书签](#书签yaml-或-sqlite)。 |
 | `since` | `2026` | 页脚显示的建站年份。 |
 | `about` | `/about/` 链接 | 侧边栏的关于页入口，设为 `about: {}` 可隐藏。 |
-| `aboutPage` | 示例文字 | 关于页内容。 |
+| `aboutPage` | 示例标题与站长卡片 | 关于页的小标题和站长卡片；页面正文写在 `source/about/index.md`。 |
 | `busuanzi` | 关闭 | 访问统计。`position` 可选 `sidebar` 或 `footer`，`$pv`、`$uv` 为占位符。 |
 | `custom.head` | 空 | 插入到 `<head>` 的 HTML。 |
 | `custom.body` | 空 | 插入到 `</body>` 前的 HTML。 |
@@ -354,17 +354,27 @@ COMMIT;
 
 ## 关于页与子页面
 
-创建 `source/about/index.html`，侧边栏的关于链接就会生效：
+创建 `source/about/index.md`，正文用 Markdown 写，侧边栏的关于链接就会生效：
 
-```yaml
+```markdown
 ---
 layout: page
 type: about
 title: 关于
 ---
+
+这里是你的网站介绍，支持 Markdown：**加粗**、列表、链接都可以。
+
+## 关于我
+
+继续写你的经历。
 ```
 
-在 `_config.webstack-next.yml` 中修改 `aboutPage.website` 和 `aboutPage.webmaster` 替换示例文字。不需要这一页时，设置 `about: {}`。
+`aboutPage.website.head`、`aboutPage.webmaster.head` 和站长卡片的 `name`、`url`、`img`、`description` 在 `_config.webstack-next.yml` 里配置，页面正文不再写进配置文件。不想自己写正文时，把 [`examples/about-page.md`](examples/about-page.md) 复制成 `source/about/index.md` 即可；这两块内容也能在关于页的 front matter 里覆盖。不需要这一页时，设置 `about: {}`。
+
+Markdown 依赖站点的渲染器，`hexo init` 默认装的 `hexo-renderer-marked` 就行。站点没有 Markdown 渲染器时，把文件改成 `source/about/index.html`、正文直接用 HTML 写也可以。
+
+旧版本把正文放在 `aboutPage.website.html` 和 `aboutPage.webmaster.html` 里，这两个字段已经不再读取——升级后请把内容移到 `source/about/index.md`，小标题留在配置里。
 
 子页面用于发布额外的目录，并复用卡片布局。创建 `source/child/index.html`：
 
@@ -385,7 +395,7 @@ childTools:
 ---
 ```
 
-子页面默认继承主题配置，也可以在 front matter 中覆盖。它的列表同样可以放在 `source/_data/child/childTools.yml`。可运行的示例见 [`dev-site/source/child/index.html`](dev-site/source/child/index.html) 和 [`dev-site/source/about/index.html`](dev-site/source/about/index.html)。
+子页面默认继承主题配置，也可以在 front matter 中覆盖。它的列表同样可以放在 `source/_data/child/childTools.yml`。可运行的示例见 [`dev-site/source/child/index.html`](dev-site/source/child/index.html) 和 [`dev-site/source/about/index.md`](dev-site/source/about/index.md)。
 
 ## 更新主题
 
