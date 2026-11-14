@@ -470,7 +470,7 @@ Tests build a copied-theme site and cover SQLite initialization, legacy imports,
 
 ## Releasing
 
-Pushing to `master` runs [`Publish theme`](.github/workflows/publish.yml), which tests the theme, bumps the version from the commit messages, tags the commit and publishes to npm:
+Pushing to `master` runs [`Publish theme`](.github/workflows/publish.yml), which tests the theme, bumps the version from the commit messages, publishes to npm, then pushes the release commit and tag and opens a GitHub release:
 
 | Commit | Version |
 | --- | --- |
@@ -479,7 +479,7 @@ Pushing to `master` runs [`Publish theme`](.github/workflows/publish.yml), which
 | `!` in the subject, or `BREAKING CHANGE:` in the body | major, `3.0.6` → `4.0.0` |
 | `docs:`, `chore:`, `ci:`, `test:` and friends | no release; they ship with the next one |
 
-A successful run leaves a `v3.1.0` tag and a `chore(release): v3.1.0` commit behind, and moves npm's `latest` tag. Pushing documentation only does not publish anything, on purpose. To publish the current code right away, run `Publish theme` from the Actions tab; the version still follows the table above.
+A successful run leaves a `v3.1.0` tag, a `chore(release): v3.1.0` commit and a [`v3.1.0` release](https://github.com/freedomgod/hexo-theme-webstack-next/releases) whose notes list the commits, and moves npm's `latest` tag. Pushing documentation only does not publish anything, on purpose. To publish the current code right away, run `Publish theme` from the Actions tab; the version still follows the table above.
 
 Publishing uses npm trusted publishing (OIDC), so **no token is stored**: on npmjs.com open the package → Settings → Trusted publishing → GitHub Actions, and enter repository `freedomgod/hexo-theme-webstack-next` with workflow file `publish.yml`. The workflow already declares `id-token: write` and publishes with `--provenance`, so that is the only setup step.
 

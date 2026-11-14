@@ -470,7 +470,7 @@ npm test        # 安装检查 + 书签与安装脚本测试
 
 ## 发布（维护者）
 
-推送到 `master` 后，[`Publish theme`](.github/workflows/publish.yml) 会自动跑测试、按提交信息升版本、打 tag 并发布到 npm：
+推送到 `master` 后，[`Publish theme`](.github/workflows/publish.yml) 会自动跑测试、按提交信息升版本、发布到 npm，然后推送发布提交和 tag，并创建 GitHub Release：
 
 | 提交 | 版本 |
 | --- | --- |
@@ -479,7 +479,7 @@ npm test        # 安装检查 + 书签与安装脚本测试
 | 带 `!` 或正文有 `BREAKING CHANGE:` | major，`3.0.6` → `4.0.0` |
 | `docs:`、`chore:`、`ci:`、`test:` 等 | 不发版，等下一次有意义的提交 |
 
-发布成功后，仓库会多出一个 `v3.1.0` tag 和一个 `chore(release): v3.1.0` 提交，npm 上的 `latest` 同步更新。只有 `docs:` 的推送不会发版，这是有意的：文档改动随下一个版本一起出去。想立刻发当前代码，到 Actions 里手动运行 `Publish theme`；改动的提交信息仍按上表决定版本号。
+发布成功后，仓库会多出一个 `v3.1.0` tag、一个 `chore(release): v3.1.0` 提交和一个 [`v3.1.0` Release](https://github.com/freedomgod/hexo-theme-webstack-next/releases)（说明由提交记录生成），npm 上的 `latest` 同步更新。只有 `docs:` 的推送不会发版，这是有意的：文档改动随下一个版本一起出去。想立刻发当前代码，到 Actions 里手动运行 `Publish theme`；改动的提交信息仍按上表决定版本号。
 
 发布使用 npm 的 trusted publishing（OIDC），**不需要保存任何 token**：在 npmjs.com 打开这个包 → Settings → Trusted publishing → GitHub Actions，填仓库 `freedomgod/hexo-theme-webstack-next`、workflow 文件名 `publish.yml`。工作流里的 `id-token: write` 和 `--provenance` 已经就绪，配置完直接运行即可。
 

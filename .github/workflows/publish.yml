@@ -52,10 +52,22 @@ jobs:
           }
       - name: Push release commit and tag
         if: steps.bump.outputs.version != ''
+        env:
+          TAG: v${{ steps.bump.outputs.version }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add package.json package-lock.json
-          git commit -m "chore(release): v${{ steps.bump.outputs.version }}"
-          git tag "v${{ steps.bump.outputs.version }}"
-          git push origin HEAD:master --follow-tags
+          git commit -m "chore(release): $TAG"
+          # --follow-tags only pushes annotated tags, so tag and push explicitly;
+          # the guard keeps a re-run of an older run from failing on an existing
+          # tag. bump-version.cjs reads the tag back through git describe.
+          git rev-parse -q --verify "refs/tags/$TAG" >/dev/null || git tag -a "$TAG" -m "$TAG"
+          git push origin HEAD:master
+          git push origin "refs/tags/$TAG"
+      - name: Publish the GitHub release
+        if: steps.bump.outputs.version != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: v${{ steps.bump.outputs.version }}
+        run: gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --title "$TAG" --generate-notes
