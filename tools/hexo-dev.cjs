@@ -54,7 +54,7 @@ async function main() {
     if (failed) throw new Error('Hexo reported a build error; see the log above.');
     serving = command === 'server';
     if (command === 'generate') {
-      for (const route of ['index.html', 'about/index.html', 'child/index.html']) {
+      for (const route of ['index.html', 'about/index.html', 'child/index.html', 'guide/index.html']) {
         const html = await fs.readFile(path.join(hexo.public_dir, route), 'utf8');
         if (!html.includes('<!DOCTYPE html>') || !html.includes('main-content')) {
           throw new Error(`Expected a rendered theme page: ${route}`);
@@ -62,8 +62,18 @@ async function main() {
         if (route === 'index.html' && !html.includes('class="resource-card"')) {
           throw new Error('The development homepage must render its configured resource cards.');
         }
-        if (route === 'about/index.html' && !html.includes('<h2')) {
-          throw new Error('The about page must render the Markdown body of source/about/index.md.');
+        if (route === 'about/index.html') {
+          if (!html.includes('<h2')) throw new Error('The about page must render the Markdown body of source/about/index.md.');
+          if ((html.match(/class="resource-card"/g) || []).length !== 1) {
+            throw new Error('The about page webmaster card must come from the Markdown list.');
+          }
+        }
+        if (route === 'guide/index.html') {
+          if (!html.includes('<h2')) throw new Error('A Markdown page without a type must render its body.');
+          if ((html.match(/class="resource-card"/g) || []).length !== 3) {
+            throw new Error('The guide page must render three cards from its Markdown list.');
+          }
+          if (!html.includes('<li>这一条没有链接')) throw new Error('A list without links must keep its list markup.');
         }
       }
       console.log(`Hexo ${hexo.version}: homepage, about and child pages generated successfully.`);

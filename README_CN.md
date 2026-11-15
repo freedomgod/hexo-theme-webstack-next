@@ -201,8 +201,7 @@ devTools:
 | `expandAll` | `false` | 页面加载时是否展开所有子分类。 |
 | `bookmark_db` | 关闭 | 可选的 SQLite 书签来源，见[书签](#书签yaml-或-sqlite)。 |
 | `since` | `2026` | 页脚显示的建站年份。 |
-| `about` | `/about/` 链接 | 侧边栏的关于页入口，设为 `about: {}` 可隐藏。 |
-| `aboutPage` | 示例标题与站长卡片 | 关于页的小标题和站长卡片；页面正文写在 `source/about/index.md`。 |
+| `about` | `/about/` 链接 | 侧边栏的关于页入口，设为 `about: {}` 可隐藏。页面内容本身写在 `source/about/index.md`。 |
 | `busuanzi` | 关闭 | 访问统计。`position` 可选 `sidebar` 或 `footer`，`$pv`、`$uv` 为占位符。 |
 | `custom.head` | 空 | 插入到 `<head>` 的 HTML。 |
 | `custom.body` | 空 | 插入到 `</body>` 前的 HTML。 |
@@ -370,11 +369,19 @@ title: 关于
 继续写你的经历。
 ```
 
-`aboutPage.website.head`、`aboutPage.webmaster.head` 和站长卡片的 `name`、`url`、`img`、`description` 在 `_config.webstack-next.yml` 里配置，页面正文不再写进配置文件。不想自己写正文时，把 [`examples/about-page.md`](examples/about-page.md) 复制成 `source/about/index.md` 即可；这两块内容也能在关于页的 front matter 里覆盖。不需要这一页时，设置 `about: {}`。
+关于页**整页内容都来自这个 Markdown 文件**：标题、正文、站长卡片都在里面，`_config.webstack-next.yml` 不再承担任何关于页内容（旧的 `aboutPage` 配置块已删除）。不想自己写就从 [`examples/about-page.md`](examples/about-page.md) 复制一份。站长卡片写成一项「以链接开头的列表」即可：
+
+```markdown
+## 关于站长
+
+- [你的名字](https://example.com/) ![头像](/images/favicon.png) 一句话简介。
+```
+
+不需要这一页时，设置 `about: {}`。
 
 Markdown 依赖站点的渲染器，`hexo init` 默认装的 `hexo-renderer-marked` 就行。站点没有 Markdown 渲染器时，把文件改成 `source/about/index.html`、正文直接用 HTML 写也可以。
 
-旧版本把正文放在 `aboutPage.website.html` 和 `aboutPage.webmaster.html` 里，这两个字段已经不再读取——升级后请把内容移到 `source/about/index.md`，小标题留在配置里。
+旧版本把正文放在 `aboutPage.website.html`、`aboutPage.webmaster.html`，小标题和站长卡片放在 `aboutPage` 里。整个 `aboutPage` 配置块已经删除：升级后把正文写进 `source/about/index.md`，站长卡片按上面的列表写法写成正文的一部分，配置文件里不用再留任何关于页内容。
 
 子页面用于发布额外的目录，并复用卡片布局。创建 `source/child/index.html`：
 
@@ -396,6 +403,19 @@ childTools:
 ```
 
 子页面默认继承主题配置，也可以在 front matter 中覆盖。它的列表同样可以放在 `source/_data/child/childTools.yml`。可运行的示例见 [`dev-site/source/child/index.html`](dev-site/source/child/index.html) 和 [`dev-site/source/about/index.md`](dev-site/source/about/index.md)。
+
+### 用 Markdown 写卡片
+
+新建 `source/tools/index.md`，直接写正文就行——连 front matter 都可以不写。**列表项以链接开头**，这个列表就渲染成卡片网格，不需要任何标记：
+
+```markdown
+## 常用工具
+
+- [GitHub](https://github.com/) ![GitHub](/images/logos/github.png) 代码托管与开源协作平台。
+- [Hexo](https://hexo.io/) 本主题所基于的静态站点生成器。
+```
+
+列表项开头的链接是卡片，紧随其后的图片是图标，剩下的文字是描述。没有链接的列表保持普通列表，所以正文和卡片可以写在同一页；嵌套列表和有序列表也不会被转换。卡片复用首页的结构与样式，也跟随卡片皮肤设置。可运行的示例见 [`dev-site/source/guide/index.md`](dev-site/source/guide/index.md)（该文件没有任何 front matter）。
 
 ## 更新主题
 

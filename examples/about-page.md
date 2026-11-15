@@ -16,6 +16,6 @@ title: 关于本站
 
 ## 关于站长
 
-卡片里的名字、链接、头像和一句话简介在 `_config.webstack-next.yml` 的 `aboutPage.webmaster` 里配置，这段正文也可以继续写你的经历。
+- [你的名字](https://example.com/) ![头像](/images/favicon.png) 在这里填写你的简介。
 
 > 主题由 [freedomgod](https://github.com/freedomgod/hexo-theme-webstack-next) 基于 [HCLonely 的 Hexo 主题](https://github.com/HCLonely/hexo-theme-webstack)继续维护，原始设计来自 [WebStackPage / Viggo](https://github.com/WebStackPage/WebStackPage.github.io)。

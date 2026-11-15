@@ -1,0 +1,26 @@
+- const setting = Object.assign({}, theme, page)
+//- Any Markdown page without a known type lands here: title plus the rendered body.
+body.page-body.boxed-container
+  nav.navbar.horizontal-menu.navbar-fixed-top
+    .navbar-inner
+      .navbar-brand
+        a(href=url_for('/index.html')).logo
+          img.hidden-xs(src=url_for(theme.logo.expanded), width='180px', alt=config.title)
+          img.visible-xs(src=url_for(theme.logo.expanded), width='180px', alt=config.title)
+        a.navbar-back(href=url_for('/index.html') aria-label='返回上一页' title='返回上一页' onclick='if (history.length > 1 && document.referrer && new URL(document.referrer).origin === location.origin) { history.back(); return false; }')
+          i.fas.fa-angle-left(aria-hidden='true')
+          span 返回
+      .navbar-mobile-clear
+      if theme.githubCorner
+        != theme.githubCorner
+
+  .page-container
+    main#main-content.main-content
+      .row
+        .col-md-12
+          .panel.panel-default
+            if page.title
+              h4.text-gray= page.title
+            if page.content
+              .panel-body!= page.content
+  include common/footer

@@ -316,6 +316,8 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 .resource-grid[hidden] { display: none !important; }
 .section-count { min-width: 26px; padding: 1px 8px; border: 1px solid var(--ws-border); border-radius: 8px; color: var(--ws-muted); font-size: 12px; text-align: center; }
 .resource-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ws-card-min), 1fr)); gap: var(--ws-card-gap); }
+/* Cards written in Markdown live inside a panel body; keep them off the text. */
+.panel-body > .resource-grid { margin: 16px 0; }
 .resource-card {
   position: relative; display: flex; align-items: center; gap: var(--ws-card-content-gap);
   min-width: 0; min-height: var(--ws-card-min-height); padding: var(--ws-card-pad-y) var(--ws-card-pad-x);

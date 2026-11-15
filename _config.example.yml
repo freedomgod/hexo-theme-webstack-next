@@ -86,17 +86,8 @@ about:
   icon: far fa-heart
   name: 关于本站
 
-# The page body comes from source/about/index.md (see examples/about-page.md);
-# only these labels and the webmaster card live here.
-aboutPage:
-  website:
-    head: 关于本站
-  webmaster:
-    head: 关于站长
-    name: 你的名字
-    url: https://example.com/
-    img: /images/favicon.png
-    description: 在这里填写你的简介。
+# The about page body comes from source/about/index.md (see examples/about-page.md),
+# which carries every heading, paragraph and the webmaster card.
 
 # Replace with your site's founding year.
 since: 2026

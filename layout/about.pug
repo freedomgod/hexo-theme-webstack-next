@@ -1,9 +1,7 @@
 - const setting = Object.assign({}, theme, page)
-//- The page body lives in source/about/index.md; the config only carries the
-//- section labels and the webmaster card, so front matter can override either.
-- const mergeAboutBlock = key => Object.assign({}, (theme.aboutPage || {})[key] || {}, (page.aboutPage || {})[key] || {})
-- const aboutWebsite = mergeAboutBlock('website')
-- const aboutWebmaster = mergeAboutBlock('webmaster')
+//- Everything on this page comes from source/about/index.md. No configuration
+//- key is read here any more: headings, text and the webmaster card (a
+//- one-item Markdown list of links) are all part of the file.
 body.page-body.boxed-container.about-page
   nav.navbar.horizontal-menu.navbar-fixed-top
     .navbar-inner
@@ -23,19 +21,6 @@ body.page-body.boxed-container.about-page
       .row
         .col-md-12
           .panel.panel-default
-            if aboutWebsite.head
-              h4.text-gray= aboutWebsite.head
             if page.content
               .panel-body!= page.content
-            if aboutWebmaster.head
-              h4.text-gray= aboutWebmaster.head
-            if aboutWebmaster.name
-              .row
-                .col-sm-12.col-md-6
-                  a.resource-card(href=url_for(aboutWebmaster.url) target='_blank' rel='noopener noreferrer')
-                    span.resource-icon
-                      img(src=url_for(aboutWebmaster.img) width='40' height='40' alt='')
-                    span.resource-copy
-                      strong.resource-name= aboutWebmaster.name
-                      span.resource-description= aboutWebmaster.description
   include common/footer

@@ -201,8 +201,7 @@ The complete set of defaults is in [`_config.example.yml`](_config.example.yml).
 | `expandAll` | `false` | Expand all submenus on load. |
 | `bookmark_db` | Disabled | Optional SQLite bookmark source; see [Bookmarks](#bookmarks-yaml-or-sqlite). |
 | `since` | `2026` | Site founding year shown in the footer. |
-| `about` | `/about/` link | Sidebar link to the about page. Set `about: {}` to hide it. |
-| `aboutPage` | Sample labels and card | The about page's section labels and webmaster card; the page body lives in `source/about/index.md`. |
+| `about` | `/about/` link | Sidebar link to the about page. Set `about: {}` to hide it. The page content itself lives in `source/about/index.md`. |
 | `busuanzi` | Disabled | Visitor statistics. `position` is `sidebar` or `footer`; `$pv` and `$uv` are placeholders. |
 | `custom.head` | empty | HTML added to `<head>`. |
 | `custom.body` | empty | HTML added before `</body>`. |
@@ -370,11 +369,19 @@ This is where your site introduction goes. Markdown works: **bold**, lists, link
 Keep writing here.
 ```
 
-`aboutPage.website.head`, `aboutPage.webmaster.head` and the webmaster card's `name`, `url`, `img` and `description` are configured in `_config.webstack-next.yml`; the page body is no longer part of the configuration. To start from a ready-made page, copy [`examples/about-page.md`](examples/about-page.md) to `source/about/index.md`. The about page can also override both blocks in its front matter. If you do not want the page, set `about: {}`.
+The about page takes **its whole content from that Markdown file**: headings, paragraphs and the webmaster card all live there, and `_config.webstack-next.yml` no longer carries anything for this page (the old `aboutPage` block was removed). Copy [`examples/about-page.md`](examples/about-page.md) to start. The webmaster card is just a one-item list that starts with a link:
+
+```markdown
+## About me
+
+- [Your name](https://example.com/) ![avatar](/images/favicon.png) One line about you.
+```
+
+If you do not want the page, set `about: {}`.
 
 Markdown needs a renderer on your site; the `hexo-renderer-marked` that `hexo init` installs is enough. Without a Markdown renderer, name the file `source/about/index.html` and write the body as HTML.
 
-Older releases read the body from `aboutPage.website.html` and `aboutPage.webmaster.html`. Those keys are gone: after upgrading, move that text into `source/about/index.md` and keep the labels in the configuration.
+Older releases read the body from `aboutPage.website.html` and `aboutPage.webmaster.html`, and the labels plus webmaster card from the rest of `aboutPage`. That whole block is gone: after upgrading, move the text into `source/about/index.md` and write the card there as a list item that starts with a link.
 
 Child pages let you publish extra directories that reuse the card layout. Create `source/child/index.html`:
 
@@ -396,6 +403,19 @@ childTools:
 ```
 
 A child page inherits the theme settings and may override them in its front matter. Its lists can also live in `source/_data/child/childTools.yml`. See the working examples in [`dev-site/source/child/index.html`](dev-site/source/child/index.html) and [`dev-site/source/about/index.md`](dev-site/source/about/index.md).
+
+### Write cards in Markdown
+
+Create `source/tools/index.md` and write the body — front matter is optional. A bullet list whose **every item starts with a link** becomes a card grid, with no marker of any kind:
+
+```markdown
+## Tools
+
+- [GitHub](https://github.com/) ![GitHub](/images/logos/github.png) Code hosting and collaboration.
+- [Hexo](https://hexo.io/) The static site generator behind this theme.
+```
+
+The link at the start of an item is the card, an image right after it becomes the icon, and the remaining text becomes the description. Lists without links stay ordinary lists, so prose and cards can share one page; nested lists and ordered lists are never converted. The cards reuse the homepage markup and styles, including the card style skins. See [`dev-site/source/guide/index.md`](dev-site/source/guide/index.md) for a working page with no front matter at all.
 
 ## Update the theme
 

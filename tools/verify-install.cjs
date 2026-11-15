@@ -16,6 +16,7 @@ async function main() {
   }
   await fs.mkdir(path.join(base, 'source', 'child'), {recursive: true});
   await fs.mkdir(path.join(base, 'source', 'about'), {recursive: true});
+  await fs.mkdir(path.join(base, 'source', 'guide'), {recursive: true});
   await fs.writeFile(path.join(base, 'package.json'), JSON.stringify({
     private: true, hexo: {version: '8.1.2'}, dependencies: {'hexo-renderer-pug': '^3.0.0', 'hexo-renderer-marked': '^7.0.0'}
   }));
@@ -24,6 +25,7 @@ async function main() {
   assert(homepage, 'README must include a complete homepage example');
   await fs.writeFile(path.join(base, 'source', 'index.html'), homepage[1]);
   await fs.copyFile(path.join(root, 'dev-site', 'source', 'about', 'index.md'), path.join(base, 'source', 'about', 'index.md'));
+  await fs.copyFile(path.join(root, 'dev-site', 'source', 'guide', 'index.md'), path.join(base, 'source', 'guide', 'index.md'));
   // A child page with no menu overrides must inherit the theme's categories.
   await fs.writeFile(path.join(base, 'source', 'child', 'index.html'), '---\nlayout: page\ntype: child\ntitle: Child resources\n---\n');
   const theme = yaml.load(await fs.readFile(path.join(root, '_config.example.yml'), 'utf8'));
@@ -40,7 +42,7 @@ async function main() {
     await hexo.init();
     await hexo.call('generate');
     assert.deepEqual(errors, [], 'consumer build must not log renderer errors');
-    for (const route of ['index.html', 'about/index.html', 'child/index.html']) {
+    for (const route of ['index.html', 'about/index.html', 'child/index.html', 'guide/index.html']) {
       const html = await fs.readFile(path.join(base, 'public', route), 'utf8');
       assert.equal((html.match(/<head>/g) || []).length, 1, `${route}: one head`);
       assert.equal((html.match(/<footer\b/g) || []).length, 1, `${route}: one footer`);
@@ -56,8 +58,12 @@ async function main() {
         assert(html.includes('class="resource-card"'), `${route}: configured cards must render`);
       } else {
         assert(html.includes('<h2'), 'about page: Markdown body of source/about/index.md must render');
+        assert.equal((html.match(/class="resource-card"/g) || []).length, 1, 'about page: the webmaster card must come from the Markdown list');
       }
     }
+    const guide = await fs.readFile(path.join(base, 'public', 'guide/index.html'), 'utf8');
+    assert.equal((guide.match(/class="resource-card"/g) || []).length, 3, 'guide page: a Markdown list of links must become cards');
+    assert(guide.includes('<li>这一条没有链接'), 'guide page: a list without links must stay a list');
     const child = await fs.readFile(path.join(base, 'public', 'child/index.html'), 'utf8');
     assert(child.includes('<title>Child resources</title>'), 'child title without trailing separator');
     console.log('PASS: README homepage, copied-theme installation, author/title/credits, inherited child menu, hidden about link, and subdirectory assets.');
