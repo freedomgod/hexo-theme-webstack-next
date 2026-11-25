@@ -3,11 +3,16 @@ function search(searchIconUrl) {
     var listIndex = -1;
     var hotList = 0;
     var searchData = userDefinedSearchData.custom ? userDefinedSearchData : {
-        "thisSearch": "https://www.baidu.com/s?wd=",
-        "thisSearchIcon": "url(" + searchIconUrl + ")",
+        "thisSearch": "https://cn.bing.com/search?q=",
+        "thisSearchIcon": "0px -40px",
         "hotStatus": true,
         "custom": false,
         "data": [{
+            name: "必应",
+            img: "url(" + searchIconUrl + ")  -80px -25px",
+            position: "0px -40px",
+            url: "https://cn.bing.com/search?q="
+        }, {
             name: "百度",
             img: "url(" + searchIconUrl + ") -80px 0px",
             position: "0px 0px",
@@ -17,11 +22,6 @@ function search(searchIconUrl) {
             img: "url(" + searchIconUrl + ")  -105px 0px",
             position: "-40px 0px",
             url: "https://www.google.com/search?q="
-        }, {
-            name: "必应",
-            img: "url(" + searchIconUrl + ")  -80px -25px",
-            position: "0px -40px",
-            url: "https://cn.bing.com/search?q="
         }, {
             name: "好搜",
             img: "url(" + searchIconUrl + ") -105px -25px",

@@ -75,7 +75,7 @@ npm install --install-links "D:/path/to/hexo-theme-webstack-next" --registry=htt
 
 把路径换成你的主题目录。安装后主题位于 `node_modules/hexo-theme-webstack-next`，主题名仍是 `webstack-next`，`themes/` 下不会多出目录。安装脚本会自动创建 `_config.webstack-next.yml`；以后再安装时会保留你已经改好的配置。
 
-请保留示例中的 `--install-links`。不加这个参数时，npm 会链接你的主题目录而不是复制，测到的就不是你要发布出去的那份包。
+请保留示例中的 `--install-links`。不加这个参数时，npm 会链接你的主题目录而不是复制，测到的就不是你要发布出去的那份包。链接时主题目录就是你的整个仓库，`hexo s` 会遍历并哈希里面的每个文件，仓库里的 `output/`、`.hexo-dev/` 等构建产物会让启动变慢，甚至报 `EMFILE: too many open files`；删掉这些目录再启动，或改回 `--install-links`。
 
 ### 启用主题
 
@@ -195,7 +195,7 @@ devTools:
 | `logo.dark` | `/images/logo_dark@2x.png` | 旧版字段，仅为兼容旧配置保留；当前布局不读取。 |
 | `flag` | 中文 | 页头的语言链接按钮，`default: true` 表示当前语言。内置图标：`flag-cn`、`flag-us`。 |
 | `search` | `true` | 是否显示搜索框。 |
-| `userDefinedSearchData` | 百度 | 搜索引擎和默认引擎，见下方示例。 |
+| `userDefinedSearchData` | 必应 | 搜索引擎列表和默认引擎。示例配置已列全 15 个内置引擎，直接增删改即可。 |
 | `githubCorner` | 本分支仓库链接 | 右上角角标 HTML，设为 `''` 可隐藏。 |
 | `menu` | 示例分类 | 侧边栏结构与网址列表。 |
 | `expandAll` | `false` | 页面加载时是否展开所有子分类。 |
@@ -209,19 +209,26 @@ devTools:
 
 修改默认搜索引擎和候选列表：
 
+示例配置里的 `userDefinedSearchData.data` 已经列全主题内置的 15 个引擎，默认是必应。要增删引擎，直接改这份列表，不用另查格式：
+
 ```yaml
 userDefinedSearchData:
   custom: true
-  thisSearch: https://www.google.com/search?q=
-  thisSearchIcon: url(https://www.google.com/favicon.ico)
-  hotStatus: false
+  thisSearch: https://cn.bing.com/search?q=
+  thisSearchIcon: url(https://cn.bing.com/favicon.ico)
+  hotStatus: true
   data:
-    - name: Google
-      img: url(https://www.google.com/favicon.ico)
-      url: https://www.google.com/search?q=
+    - name: 必应
+      img: url(https://cn.bing.com/favicon.ico)
+      url: https://cn.bing.com/search?q=
+    - name: 百度
+      img: url(https://www.baidu.com/favicon.ico)
+      url: https://www.baidu.com/s?wd=
 ```
 
-`img` 是图标的 CSS 值，`url` 是搜索地址前缀。搜索框会把关键词交给选中的外部搜索引擎，不会过滤本站卡片。`hotStatus: true` 时，热词建议统一来自百度，与当前选中的引擎无关，因此浏览器需要能访问 `sp0.baidu.com`。
+只有 `custom: true` 时这份列表才生效；设成 `false` 会回退到主题内置列表（同样默认必应）。`img` 是图标 CSS 值，可以换成本地 `/images/...`；`url` 是搜索地址前缀，关键词直接拼在末尾，所以要截到 `?q=`、`?wd=` 这类参数名和等号为止。`thisSearch` 与 `thisSearchIcon` 决定默认引擎，要与 `data` 中的某一项一致。
+
+搜索框把关键词交给选中的外部搜索引擎，不会过滤本站卡片。`hotStatus: true` 时，热词建议统一来自百度，与当前选中的引擎无关，因此浏览器需要能访问 `sp0.baidu.com`。访客选过的引擎记在浏览器的 `localStorage` 里，改配置不会覆盖已经选过引擎的访客。
 
 颜色、间距、圆角和阴影由 `source/css/hclonely.css` 里的 `--ws-*` 变量控制，暗色覆盖写在 `body.night` 下。不想改主题文件时，可以通过 `custom.head` 加载额外的 CSS。
 
@@ -479,6 +486,8 @@ node -e "console.log(require('hexo-theme-webstack-next/package.json').version)"
 | 图片不显示 | 放到 `source/images/`，用 `/images/文件名.png` 引用，并检查文件名大小写。 |
 | 首页没有卡片 | 在首页 front matter 中加入 `__index: true`，或使用 `hexo-generator-index` 生成的页面。 |
 | `hexo d` 没有发布内容 | 在 `_config.yml` 中配置 `deploy`，并安装对应的部署插件。主题只负责准备文件。 |
+| `hexo s` 报 `EMFILE: too many open files` | 主题是以链接方式安装的（`npm link`、`file:` 依赖），主题目录就是整个本地仓库，Hexo 会遍历其中每个文件。删掉仓库里的 `output/`、`.hexo-dev/`、`*.tgz` 等构建产物后重启，或改用 `--install-links` 安装一份拷贝。 |
+| 换过安装方式后首页空白，日志只有 `WARN  No layout: index.html` | `db.json` 里还留着上一个主题目录的缓存条目，Hexo 把它们当成被删除的模板。执行 `hexo clean` 删掉 `db.json` 与 `public/`，再重新 `hexo s`。 |
 
 ## 本地开发
 
@@ -496,7 +505,7 @@ npm run build   # 生成开发站点
 npm test        # 安装检查 + 书签与安装脚本测试
 ```
 
-测试会复制一份主题并搭建临时站点，覆盖 SQLite 初始化、旧库导入、数据校验、服务器启动和部署前刷新等场景，需要 Node.js 22.13 或更高版本。执行 `npm run bookmarks:sample` 可以用 [`examples/bookmarks.sql`](examples/bookmarks.sql) 重新生成 [`examples/bookmarks.sqlite`](examples/bookmarks.sqlite)。生成的文件位于 `.hexo-dev/` 和 `output/`，不会进入 Git，也不会打进 npm 包。
+测试会复制一份主题并搭建临时站点，覆盖 SQLite 初始化、旧库导入、数据校验、服务器启动和部署前刷新等场景，需要 Node.js 22.13 或更高版本。执行 `npm run bookmarks:sample` 可以用 [`examples/bookmarks.sql`](examples/bookmarks.sql) 重新生成 [`examples/bookmarks.sqlite`](examples/bookmarks.sqlite)。生成的文件位于 `.hexo-dev/` 和 `output/`，不会进入 Git，也不会打进 npm 包；`output/` 下的临时站点在测试结束时就删除，被中断留下的会在下次运行时清掉。
 
 ## 发布（维护者）
 

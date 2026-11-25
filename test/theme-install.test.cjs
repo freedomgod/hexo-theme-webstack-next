@@ -52,3 +52,26 @@ test('fresh installs get a usable independent config and non-Hexo projects are u
   setupTheme(other, themeDir);
   assert(!fs.existsSync(path.join(other, '_config.webstack-next.yml')));
 });
+
+test('the shipped example lists every bundled engine and defaults to Bing', () => {
+  const config = yaml.load(fs.readFileSync(path.join(root, '_config.example.yml'), 'utf8'));
+  const search = config.userDefinedSearchData;
+  assert.equal(config.search, true);
+  // A shipped list that is not `custom` would be ignored, defeating the point of listing it.
+  assert.equal(search.custom, true);
+  assert.equal(search.thisSearch, 'https://cn.bing.com/search?q=');
+  assert.equal(search.thisSearchIcon, 'url(https://cn.bing.com/favicon.ico)');
+  assert.equal(search.data[0].name, '必应');
+  assert(search.data.some(entry => entry.url === search.thisSearch), 'thisSearch must match one data entry');
+
+  // header.js keeps a fallback list; the example must not drop any of those engines.
+  const fallback = fs.readFileSync(path.join(root, 'source/js/header.js'), 'utf8');
+  const bundled = [...fallback.matchAll(/name:\s*"([^"]+)"/g)].map(match => match[1]);
+  assert.deepEqual(search.data.map(entry => entry.name), bundled);
+  assert.match(fallback, /"thisSearch": "https:\/\/cn\.bing\.com\/search\?q="/);
+  assert.match(fallback, /"thisSearchIcon": "0px -40px"/);
+  for (const entry of search.data) {
+    assert(entry.img, `${entry.name} needs an img`);
+    assert(entry.url, `${entry.name} needs a url`);
+  }
+});
