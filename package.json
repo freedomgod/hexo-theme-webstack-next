@@ -1,6 +1,6 @@
 {
   "name": "hexo-theme-webstack-next",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "description": "WebStack Next: a Hexo navigation theme with local SQLite bookmarks, maintained by freedomgod.",
   "keywords": [
     "hexo",
