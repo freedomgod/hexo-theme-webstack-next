@@ -4,11 +4,13 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const Hexo = require('hexo');
 const yaml = require('js-yaml');
+const fixtures = require('./fixture-dirs.cjs');
 
 async function main() {
   const root = path.resolve(__dirname, '..');
-  await fs.mkdir(path.join(root, 'output'), {recursive: true});
-  const base = await fs.mkdtemp(path.join(root, 'output', 'install-check-'));
+  const reclaimed = fixtures.sweepStale();
+  if (reclaimed) console.log(`removed ${reclaimed} stale fixture(s) from output/`);
+  const base = fixtures.create('install-check-');
   const themeDir = path.join(base, 'themes', 'webstack-next');
   await fs.mkdir(themeDir, {recursive: true});
   for (const entry of ['layout', 'source', 'scripts', 'lib', 'examples', '_config.example.yml', 'package.json']) {
@@ -67,7 +69,10 @@ async function main() {
     const child = await fs.readFile(path.join(base, 'public', 'child/index.html'), 'utf8');
     assert(child.includes('<title>Child resources</title>'), 'child title without trailing separator');
     console.log('PASS: README homepage, copied-theme installation, author/title/credits, inherited child menu, hidden about link, and subdirectory assets.');
-  } finally { await hexo.exit(); }
+  } finally {
+    await hexo.exit();
+    try { fixtures.remove(base); } catch (error) { console.warn(`fixture cleanup failed for ${base}: ${error.code}`); }
+  }
 }
 
 main().catch(error => { console.error(error); process.exitCode = 1; });

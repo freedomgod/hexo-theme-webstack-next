@@ -9,9 +9,11 @@ const yaml = require('js-yaml');
 const { DatabaseSync } = require('node:sqlite');
 
 const root = path.resolve(__dirname, '..');
+const fixtures = require('../tools/fixture-dirs.cjs');
+const reclaimed = fixtures.sweepStale();
+if (reclaimed) console.log(`removed ${reclaimed} stale fixture(s) from output/`);
 async function fixture(t, enabled = true, legacy = false, overrides = {}) {
-  fs.mkdirSync(path.join(root, 'output'), { recursive: true });
-  const base = fs.mkdtempSync(path.join(root, 'output', 'sqlite-check-'));
+  const base = fixtures.create('sqlite-check-');
   const themeDir = path.join(base, 'themes/webstack-next');
   fs.mkdirSync(themeDir, { recursive: true });
   for (const entry of ['layout', 'source', 'scripts', 'lib', 'examples', '_config.example.yml', 'package.json']) {
@@ -28,7 +30,12 @@ async function fixture(t, enabled = true, legacy = false, overrides = {}) {
   const hexo = new Hexo(base, { silent: true });
   const errors = [];
   hexo.log.error = (...args) => errors.push(args.map(String).join(' '));
-  t.after(async () => { hexo.unwatch(); await hexo.exit(); assert.deepEqual(errors, []); });
+  t.after(async () => {
+    hexo.unwatch();
+    await hexo.exit();
+    try { fixtures.remove(base); } catch (error) { console.warn(`fixture cleanup failed for ${base}: ${error.code}`); }
+    assert.deepEqual(errors, []);
+  });
   await hexo.init();
   function edit(sql) {
     const db = new DatabaseSync(path.join(base, '.webstack/bookmarks.sqlite'));
