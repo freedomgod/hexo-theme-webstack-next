@@ -35,7 +35,7 @@ test('initialization supplies a real sample, preserves existing data and ignores
 test('exports the sample with existing template fields and preserves deterministic order', t => {
   const options = fixture(t);
   api().initialize(options);
-  edit(options, "UPDATE bookmarks SET tags = '代码,工具' WHERE id = 1; UPDATE bookmarks SET sort_order = -1, description = '中文: # 引号\n第二行' WHERE id = 2");
+  edit(options, "UPDATE bookmarks SET tags = '代码,工具' WHERE id = 1; UPDATE bookmarks SET sort_order = -1, description = '中文: # 引号\n第二行', img = '' WHERE id = 2");
   const result = api().exportBookmarks(options);
   assert.deepEqual(result.menu, [
     { name: '常用工具', icon: 'far fa-star', config: 'sqlite_category_1' },
@@ -46,6 +46,7 @@ test('exports the sample with existing template fields and preserves determinist
   ]);
   assert.deepEqual(Object.keys(result.sqlite_category_1[0]), ['name', 'url', 'img', 'description']);
   assert.equal(result.sqlite_category_1[0].name, 'Hexo');
+  assert.equal(result.sqlite_category_1[0].img, '');
   assert.equal(result.sqlite_category_1[1].tags, '代码,工具');
   const output = path.join(options.base, 'webstack.generated.yml');
   assert.deepEqual(yaml.load(fs.readFileSync(output, 'utf8')), result);

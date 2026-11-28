@@ -10,7 +10,7 @@ It is a fork of [HCLonely/hexo-theme-webstack](https://github.com/HCLonely/hexo-
 
 ## Features
 
-- Responsive card grid with a collapsible sidebar, category icons and two levels of categories.
+- Responsive card grid with a collapsible sidebar, category icons, two levels of categories and optional card tags.
 - Light and dark appearance, with a switch in the header.
 - Three card styles (elevated, outline, soft) and three sizes (compact, standard, large), switchable in the header and saved in the browser.
 - Search box that opens your preferred external search engine, with configurable providers and optional hot-keyword suggestions.
@@ -148,6 +148,7 @@ hotTools:
     url: https://github.com/
     img: /images/logos/github.png
     description: Code hosting and collaboration.
+    tags: code,open-source
 
 devTools:
   - name: Hexo
@@ -164,9 +165,9 @@ Each bookmark accepts:
 | --- | --- | --- |
 | `name` | Yes | Card title. |
 | `url` | Yes | Destination. HTTP(S), FTP, `mailto:`, local paths and anchors are accepted. |
-| `img` | No | Card icon; a URL or a path under your site. Defaults to `/images/favicon.png`. |
+| `img` | No | Card icon; a URL or a path under your site. When empty or omitted, an inline SVG avatar is generated from the first character of `name`. |
 | `description` | No | Short description shown under the title. |
-| `tags` | No | Text tags, stored in the data and kept when converting to SQLite. The current cards do not display them. |
+| `tags` | No | Comma-separated tags shown as `#tag` at the bottom of the card, for example `AI,chat`. |
 
 To keep a long list out of the configuration file, put it in `source/_data/<config>.yml` as a YAML list:
 
@@ -313,9 +314,9 @@ The database uses schema version 1.
 | `id` | Integer primary key. Can be assigned by SQLite. |
 | `category_id` | Category that contains the bookmark. |
 | `name`, `url` | Display name and destination. |
-| `img` | Image URL or site path. Defaults to `/images/favicon.png`. |
+| `img` | Image URL or site path. An empty string generates the default avatar from the first character of the name. The column is `NOT NULL`; use `''`, not `NULL`, to leave it empty. |
 | `description` | Description text. Defaults to empty. |
-| `tags` | Optional tag text. Defaults to empty. |
+| `tags` | Comma-separated tags shown as `#tag` at the bottom of the card. Defaults to empty. |
 | `sort_order`, `enabled` | Same rules as categories. |
 
 Categories support two levels. A parent category with children cannot contain bookmarks directly. Deleting a category requires moving or deleting its bookmarks first. Orphaned, cyclic and deeper-than-two-level structures are rejected, including when `enabled` is `0`.
@@ -336,6 +337,8 @@ VALUES (last_insert_rowid(), 'SQLite', 'https://sqlite.org/',
         '/images/favicon.png', 'SQLite documentation', 'database,docs', 10);
 COMMIT;
 ```
+
+Set `img` to `''` to use the generated initial avatar; separate `tags` with commas or leave the column empty.
 
 ### Command reference
 

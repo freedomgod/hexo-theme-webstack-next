@@ -10,10 +10,18 @@ section.resource-section(aria-label=menuName)
     span.section-count(aria-label=menus.length + ' 个网站')= menus.length
   .resource-grid(id=gridId)
     each menu in menus
-      a.resource-card(href=url_for(menu.url) target='_blank' rel='noopener noreferrer' title=menu.name + ' · ' + menu.description)
+      - const tags = typeof menu.tags === 'string' ? menu.tags.split(/[,，]/).map(tag => tag.trim()).filter(Boolean) : []
+      - const image = (typeof menu.img === 'string' && menu.img.trim()) ? url_for(menu.img) : bookmarkAvatar(menu.name)
+      - const cardTitle = [menu.name, menu.description].filter(Boolean).join(' · ')
+      a.resource-card(href=url_for(menu.url) target='_blank' rel='noopener noreferrer' title=cardTitle)
         span.resource-icon
-          img(src=url_for(menu.img) loading='lazy' decoding='async' width='40' height='40' alt='' onerror="this.hidden = true")
+          img(src=image loading='lazy' decoding='async' width='40' height='40' alt='' onerror="this.hidden = true")
         span.resource-copy
           strong.resource-name= menu.name
-          span.resource-description= menu.description
+          if menu.description
+            span.resource-description= menu.description
+        if tags.length
+          span.resource-tags
+            each tag in tags
+              span.resource-tag= tag
         i.fas.fa-arrow-up.resource-arrow(aria-hidden='true')

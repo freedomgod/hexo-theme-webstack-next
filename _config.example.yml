@@ -107,10 +107,12 @@ hotTools:
     url: https://github.com/
     img: /images/logos/github.png
     description: 代码托管与开源协作平台。
+    tags: 代码,开源
   - name: Hexo
     url: https://hexo.io/
     img: /images/favicon.png
     description: 快速、简洁的静态网站框架。
+    tags: 静态站点,框架
 
 devTools:
   - name: Node.js

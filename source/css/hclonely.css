@@ -27,6 +27,9 @@
   --ws-shadow: 0 2px 8px rgb(0 0 0 / 3%);
   --ws-shadow-hover: 0 8px 24px rgb(0 0 0 / 8%);
   --ws-sidebar-width: 248px;
+  --ws-sidebar-font-size: 13px;
+  --ws-sidebar-sub-font-size: 12px;
+  --ws-sidebar-line-height: 20px;
   --ws-gutter: clamp(24px, 3.2vw, 56px);
   --ws-duration: 180ms;
   --ws-card-bg: var(--ws-surface);
@@ -40,7 +43,10 @@
   --ws-card-icon-radius: 10px;
   --ws-card-name-size: 15px;
   --ws-card-desc-size: 12px;
+  --ws-card-tag-size: 11px;
   --ws-card-content-gap: 14px;
+  --ws-card-hover-border: #c5d0e6;
+  --ws-card-shadow-hover: 0 16px 34px rgb(31 47 79 / 10%);
   --ws-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
 /* The viewport scrollbar follows the root color scheme, not the body's. */
@@ -65,6 +71,8 @@ body.night {
   --ws-icon-bg: #e8e8e8;
   --ws-shadow: 0 2px 8px rgb(0 0 0 / 10%);
   --ws-shadow-hover: 0 8px 24px rgb(0 0 0 / 20%);
+  --ws-card-hover-border: #4b5874;
+  --ws-card-shadow-hover: 0 16px 34px rgb(0 0 0 / 28%);
   --ws-card-bg: var(--ws-surface);
 }
 /* Scope density to the bookmark grid so the about page's standalone card keeps its defaults. */
@@ -78,6 +86,7 @@ html[data-card-size='compact'] .resource-grid {
   --ws-card-icon-radius: 8px;
   --ws-card-name-size: 14px;
   --ws-card-desc-size: 11.5px;
+  --ws-card-tag-size: 10px;
   --ws-card-content-gap: 12px;
 }
 html[data-card-size='large'] .resource-grid {
@@ -90,6 +99,7 @@ html[data-card-size='large'] .resource-grid {
   --ws-card-icon-radius: 12px;
   --ws-card-name-size: 17px;
   --ws-card-desc-size: 13px;
+  --ws-card-tag-size: 12px;
   --ws-card-content-gap: 16px;
 }
 body.page-body {
@@ -121,11 +131,12 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 .sidebar-menu .logo-env { min-height: 88px; padding: 26px 30px; border-bottom: 1px solid var(--ws-sidebar-hover); }
 .sidebar-menu .logo-env .logo { max-width: 172px; }
 .sidebar-menu .logo-env img { object-fit: contain; }
-.sidebar-menu .main-menu { margin: 28px 0; padding: 0 16px; }
-.sidebar-menu .main-menu li { margin: 4px 0; }
+.sidebar-menu .main-menu { margin: 20px 0; padding: 0 16px; }
+.sidebar-menu .main-menu li { margin: 2px 0; }
 .sidebar-menu .main-menu a {
-  min-height: 46px; padding: 12px 16px; border: 0; border-radius: var(--ws-radius-sm);
-  color: var(--ws-sidebar-text); font: 500 14px/22px var(--ws-font);
+  min-height: 40px; padding: 9px 14px; border: 0; border-radius: var(--ws-radius-sm);
+  color: var(--ws-sidebar-text); font-weight: 500; font-size: var(--ws-sidebar-font-size);
+  font-family: var(--ws-font); line-height: var(--ws-sidebar-line-height);
   transition: color var(--ws-duration), background var(--ws-duration);
 }
 .sidebar-menu .main-menu a > i { width: 18px; margin-right: 12px; text-align: center; }
@@ -135,8 +146,8 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 .sidebar-menu a:focus-visible { outline-color: var(--ws-sidebar-accent) !important; }
 .sidebar-menu .main-menu li.has-sub > a:before { color: var(--ws-sidebar-text); font-weight: 900; }
 .sidebar-menu .main-menu ul { padding: 4px 0; }
-.sidebar-menu .main-menu ul li a { padding-left: 30px; font-size: 13px; }
-.sidebar-menu .submit-tag { margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--ws-sidebar-hover); }
+.sidebar-menu .main-menu ul li a { padding-left: 28px; font-size: var(--ws-sidebar-sub-font-size); line-height: var(--ws-sidebar-line-height); }
+.sidebar-menu .submit-tag { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--ws-sidebar-hover); }
 .sidebar-menu.collapsed .main-menu > li > ul { background: var(--ws-sidebar); border-radius: var(--ws-radius-sm); padding: 8px; box-shadow: var(--ws-shadow-hover); }
 .sidebar-menu.collapsed .main-menu > li.active, .sidebar-menu.collapsed .main-menu > li li.active { background: transparent; }
 /* Busuanzi counters stay on one row: the label may ellipsize, the number never wraps. */
@@ -319,26 +330,55 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 /* Cards written in Markdown live inside a panel body; keep them off the text. */
 .panel-body > .resource-grid { margin: 16px 0; }
 .resource-card {
-  position: relative; display: flex; align-items: center; gap: var(--ws-card-content-gap);
+  position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto;
+  align-items: center; column-gap: var(--ws-card-content-gap);
   min-width: 0; min-height: var(--ws-card-min-height); padding: var(--ws-card-pad-y) var(--ws-card-pad-x);
   background: var(--ws-card-bg); border: 1px solid var(--ws-border); border-radius: var(--ws-card-radius); box-shadow: var(--ws-shadow);
   color: var(--ws-text); text-decoration: none;
-  transition: transform var(--ws-duration), background-color var(--ws-duration), border-color var(--ws-duration), box-shadow var(--ws-duration);
+  transition: background-color var(--ws-duration), border-color var(--ws-duration), box-shadow var(--ws-duration);
 }
-.resource-card:hover { transform: translateY(-2px); border-color: var(--ws-border-hover); box-shadow: var(--ws-shadow-hover); color: var(--ws-text); text-decoration: none; }
+.resource-card:hover, .resource-card:focus-visible {
+  border-color: var(--ws-card-hover-border); box-shadow: var(--ws-card-shadow-hover);
+  color: var(--ws-text); text-decoration: none;
+}
 /* Alternative card skins are opt-in and keep the same DOM and hit target. */
 html[data-card-style='outline'] .resource-grid .resource-card { background: transparent; border-color: var(--ws-border-hover); box-shadow: none; }
-html[data-card-style='outline'] .resource-grid .resource-card:hover { background: var(--ws-surface); border-color: var(--ws-accent); box-shadow: none; transform: translateY(-1px); }
+html[data-card-style='outline'] .resource-grid .resource-card:hover, html[data-card-style='outline'] .resource-grid .resource-card:focus-visible { background: var(--ws-surface); border-color: var(--ws-accent); box-shadow: none; }
 html[data-card-style='soft'] .resource-grid .resource-card { background: var(--ws-surface-soft); border-color: transparent; box-shadow: none; }
-html[data-card-style='soft'] .resource-grid .resource-card:hover { background: var(--ws-accent-soft); border-color: transparent; box-shadow: none; transform: translateY(-1px); }
-.resource-icon { display: flex; align-items: center; justify-content: center; flex: 0 0 var(--ws-card-icon-size); height: var(--ws-card-icon-size); border-radius: var(--ws-card-icon-radius); background: var(--ws-icon-bg); }
-.resource-icon img { width: calc(var(--ws-card-icon-size) - 16px); height: calc(var(--ws-card-icon-size) - 16px); object-fit: contain; border-radius: calc(var(--ws-card-icon-radius) - 3px); }
+html[data-card-style='soft'] .resource-grid .resource-card:hover, html[data-card-style='soft'] .resource-grid .resource-card:focus-visible { background: var(--ws-accent-soft); border-color: transparent; box-shadow: none; }
+.resource-icon {
+  display: flex; grid-column: 1; grid-row: 1; align-items: center; justify-content: center;
+  width: var(--ws-card-icon-size); height: var(--ws-card-icon-size); border-radius: var(--ws-card-icon-radius);
+  background: var(--ws-icon-bg); transition: box-shadow var(--ws-duration);
+}
+.resource-card:hover .resource-icon, .resource-card:focus-visible .resource-icon { box-shadow: 0 0 0 3px var(--ws-accent-soft); }
+.resource-icon img { width: calc(var(--ws-card-icon-size) - 16px); height: calc(var(--ws-card-icon-size) - 16px); object-fit: contain; border-radius: calc(var(--ws-card-icon-radius) - 3px); transition: transform var(--ws-duration); }
+.resource-card:hover .resource-icon img, .resource-card:focus-visible .resource-icon img { transform: scale(1.04); }
 .resource-icon img[hidden] { display: none; }
-.resource-copy { min-width: 0; }
-.resource-name { display: block; padding-right: 8px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: var(--ws-card-name-size); font-weight: 650; line-height: 1.5; }
+.resource-copy { grid-column: 2; grid-row: 1; min-width: 0; padding-right: 18px; }
+.resource-name { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: var(--ws-card-name-size); font-weight: 650; line-height: 1.5; }
 .resource-description { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 5px; color: var(--ws-muted); font-size: var(--ws-card-desc-size); line-height: 1.65; overflow-wrap: anywhere; }
-.resource-arrow { position: absolute; top: 12px; right: 12px; font-size: 10px; color: var(--ws-muted); opacity: .6; transform: rotate(45deg); }
-.resource-card:hover .resource-arrow { color: var(--ws-accent); opacity: 1; }
+/* Tags are catalog metadata: a full-width footer, not another row of badges. */
+.resource-tags {
+  position: relative; display: flex; grid-column: 1 / -1; grid-row: 2; flex-wrap: wrap; align-items: center;
+  gap: 4px 14px; margin-top: 13px; padding-top: 10px; border-top: 1px solid var(--ws-border);
+}
+.resource-tags::before {
+  content: ''; position: absolute; top: -1px; left: 0; width: 100%; height: 1px;
+  background: var(--ws-accent); transform: scaleX(0); transform-origin: left center;
+  transition: transform var(--ws-duration) ease-out;
+}
+.resource-card:hover .resource-tags::before, .resource-card:focus-visible .resource-tags::before { transform: scaleX(1); }
+.resource-tag {
+  max-width: 100%; overflow: hidden; color: var(--ws-muted);
+  font-size: var(--ws-card-tag-size); font-weight: 500; line-height: 1.5; letter-spacing: .01em;
+  text-overflow: ellipsis; white-space: nowrap; transition: color var(--ws-duration);
+}
+.resource-tag::before { content: '#'; margin-right: 1px; color: var(--ws-accent); font-weight: 700; opacity: .5; transition: opacity var(--ws-duration); }
+.resource-card:hover .resource-tag, .resource-card:focus-visible .resource-tag { color: var(--ws-text); }
+.resource-card:hover .resource-tag::before, .resource-card:focus-visible .resource-tag::before { opacity: 1; }
+.resource-arrow { position: absolute; top: 12px; right: 12px; font-size: 10px; color: var(--ws-muted); opacity: .6; transform: rotate(45deg); transition: color var(--ws-duration), opacity var(--ws-duration); }
+.resource-card:hover .resource-arrow, .resource-card:focus-visible .resource-arrow { color: var(--ws-accent); opacity: 1; }
 /* About, prose and footer */
 .text-gray { color: var(--ws-text); }
 .panel { padding: 28px; background: var(--ws-surface); border: 1px solid var(--ws-border); border-radius: var(--ws-radius); box-shadow: var(--ws-shadow); }
@@ -389,7 +429,7 @@ footer.main-footer .go-up a:hover { color: var(--ws-on-accent); background: var(
   .sidebar-menu.collapsed .logo-env { padding: 24px 0; }
   .sidebar-menu.collapsed .logo-env .logo { max-width: none; }
   .sidebar-menu.collapsed .main-menu { padding: 0 10px; }
-  .sidebar-menu.collapsed .main-menu > li > a { padding: 12px 8px; }
+  .sidebar-menu.collapsed .main-menu > li > a { padding: 9px 8px; }
   /* The counter link keeps its own horizontal padding, so center the icon explicitly in the rail. */
   .sidebar-menu.collapsed .main-menu > li > a.busuanzi-link { justify-content: center; padding-right: 0; padding-left: 0; }
   /* The vendor hides menu labels here; our flex counter would otherwise overflow the 80px rail. */
@@ -411,6 +451,8 @@ footer.main-footer .go-up a:hover { color: var(--ws-on-accent); background: var(
   .sidebar-menu .logo-env .mobile-menu-toggle { display: block !important; top: 0; }
   .sidebar-menu .logo-env .mobile-menu-toggle a { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; margin-top: -4px; color: var(--ws-sidebar-text); border-radius: var(--ws-radius-sm); }
   .sidebar-menu .main-menu { margin: 12px 0; padding: 0 16px; }
+  /* Keep the compact desktop rows but restore a 44px touch target on phones. */
+  .sidebar-menu .main-menu a { min-height: 44px; padding-top: 11px; padding-bottom: 11px; }
   /* The legacy tablet script may retain .collapsed at exactly 768px. */
   .sidebar-menu.collapsed .logo-env { padding: 20px; }
   .sidebar-menu.collapsed .logo-env .logo { float: left; max-width: 148px; }

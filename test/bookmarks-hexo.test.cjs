@@ -122,6 +122,27 @@ test('normalizes Font Awesome 6 icons from YAML before rendering', async t => {
   assert.doesNotMatch(html, /fa-solid/);
 });
 
+test('renders comma-separated tags and generates an avatar when img is empty', async t => {
+  const { hexo, base } = await fixture(t, false, false, {
+    menu: [{ name: '工具', icon: 'fas fa-tools', config: 'tools' }],
+    tools: [
+      { name: 'ChatGPT', url: 'https://chatgpt.com/', img: '', description: 'AI 对话', tags: 'AI, 对话' },
+      { name: '无图标', url: 'https://example.com/' }
+    ]
+  });
+  await hexo.call('generate', { bail: true });
+  const html = fs.readFileSync(path.join(base, 'public/index.html'), 'utf8');
+  assert.equal((html.match(/class="resource-tag"/g) || []).length, 2);
+  assert.match(html, /class="resource-tag">AI<\/span>/);
+  assert.match(html, /class="resource-tag">对话<\/span>/);
+  assert.doesNotMatch(html, /src=""/);
+  const avatars = [...html.matchAll(/<img src="(data:image\/svg\+xml;base64,[^"]+)"/g)]
+    .map(match => Buffer.from(match[1].split(',')[1], 'base64').toString('utf8'));
+  assert.equal(avatars.length, 2);
+  assert.match(avatars[0], />C<\/text><\/svg>$/);
+  assert.match(avatars[1], />无<\/text><\/svg>$/);
+});
+
 test('export-db reads split YAML even when SQLite is enabled but missing, without generating pages', async t => {
   const { hexo, base } = await fixture(t, true);
   const list = '- name: 当前 YAML 书签\n  url: https://example.com/current\n  tags: 中文,工具\n';

@@ -10,7 +10,7 @@ WebStack Next 是一个用来搭建个人网址导航的 [Hexo](https://hexo.io/
 
 ## 功能
 
-- 响应式卡片网格，侧边栏可折叠，分类支持图标和两级结构。
+- 响应式卡片网格，侧边栏可折叠，分类支持图标和两级结构；卡片可显示标签。
 - 明暗两套配色，页头可直接切换。
 - 卡片外观可在浮起、描边、柔和三种样式和紧凑、标准、宽松三档大小间切换，选择保存在浏览器本地。
 - 搜索框可调用外部搜索引擎，引擎可配置，并可选显示搜索热词建议。
@@ -148,6 +148,7 @@ hotTools:
     url: https://github.com/
     img: /images/logos/github.png
     description: 代码托管与开源协作平台。
+    tags: 代码,开源
 
 devTools:
   - name: Hexo
@@ -164,9 +165,9 @@ devTools:
 | --- | --- | --- |
 | `name` | 是 | 卡片标题。 |
 | `url` | 是 | 目标地址，支持 HTTP(S)、FTP、`mailto:`、本地路径和锚点。 |
-| `img` | 否 | 卡片图标，可以是图片地址或站点内路径，默认 `/images/favicon.png`。 |
+| `img` | 否 | 卡片图标，可以是图片地址或站点内路径；留空或省略时，按 `name` 首字符生成内联 SVG 头像。 |
 | `description` | 否 | 标题下方的简短说明。 |
-| `tags` | 否 | 文本标签，会写入数据并在转换为 SQLite 时保留；当前卡片不显示标签。 |
+| `tags` | 否 | 英文逗号分隔的标签，以 `#标签` 形式显示在卡片底部，例如 `AI,对话`。 |
 
 列表很长时，可以放到 `source/_data/<config>.yml`，内容就是一个 YAML 列表：
 
@@ -313,9 +314,9 @@ hexo bookmarks init --from "D:/path/to/Bookmark.db"
 | `id` | 整数主键，可由 SQLite 分配。 |
 | `category_id` | 所属分类。 |
 | `name`、`url` | 显示名称和目标地址。 |
-| `img` | 图片地址或站点内路径，默认 `/images/favicon.png`。 |
+| `img` | 图片地址或站点内路径；空字符串表示按名称首字符生成默认头像。字段是 `NOT NULL`，留空请写 `''`，不要写 `NULL`。 |
 | `description` | 说明文字，默认空。 |
-| `tags` | 可选的标签文本，默认空。 |
+| `tags` | 英文逗号分隔的标签，以 `#标签` 形式显示在卡片底部，默认空。 |
 | `sort_order`、`enabled` | 规则同分类。 |
 
 分类最多两级。已经有子分类的父分类不能直接放网址；删除分类前要先移走或删除它下面的网址。孤立分类、循环引用和超过两级的结构都会被拒绝，即使 `enabled` 为 `0`。
@@ -336,6 +337,8 @@ VALUES (last_insert_rowid(), 'SQLite', 'https://sqlite.org/',
         '/images/favicon.png', 'SQLite 官方文档', '数据库,文档', 10);
 COMMIT;
 ```
+
+把 `img` 写成 `''` 时，卡片会按名称首字符生成默认头像；`tags` 用英文逗号分隔，可留空。
 
 ### 命令一览
 
